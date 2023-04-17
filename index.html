@@ -1,0 +1,63 @@
+<html>
+    <head>
+		<title>IntersectionObsrver用いたJavaScript｜アニメーション</title>
+	</head>
+    <body>
+		<div id="parent">
+			<div class=".child"></div>
+			<div class=".child"></div>
+			<div class=".child"></div>
+		</div>
+		<style>
+			/*fadein*/
+			.child {
+				opacity: 0;
+				transform: translateY(30px);
+				transition: opacity 1s, transform 1s;
+			}
+			.child.active {
+				opacity: 1;
+				transform: translateY(0px);
+			}
+		</style>
+        <script>
+			/*fadein*/
+			//監視対象要素を取得
+			const target = document.querySelectorAll('.child');
+
+			//表示領域を設定する
+			const option = {
+				//表示対象領域の指定※値をnullにすると「ビューポート全体が表示対象領域」に
+				root: document.querySelector('#parent'),
+				//表示対象領域の上下左右に余白設定、この場合上下に20%余白をつける
+				//ただし`-`が付いているので、上下逆になる
+				rootMargin: '-20% 0%',
+				//表示対象領域内で要素が何％表示されたら、関数を発動するかの設定。0-1で1が100%
+				//下記の場合、表示対象領域内で要素が50%表示されたら発動
+				threshold: .5,
+			}
+
+			//要素が表示領域optionに交差した時に、関数callbackを呼び出す機能を作成して定数化
+			//※指定されたHTML要素がビューポート内に入ったり、ビューポートから出たりしたときに、特定のコールバック関数を呼び出すためのAPI
+			//*e,g. IntersectionObserver(A,B)では表示対象領域Bに該当するとき、関数Aが発動される
+			const observer = new IntersectionObserver(callback,option);
+
+			//要素targetの反復処理をし、監視対象要素として登録
+			//※observe()メソッド＝監視したい要素を引数として受け取り、監視対象要素として登録する
+			target.forEach((tgt) => {
+				observer.observe(tgt);
+			});
+
+			//関数callbackを定義
+			function callback(entries){
+				entries.foreach((entry) => {
+					const target = entry.target;
+					//要素が要素が指定領域を交差していたら下記を行う（true）
+					if(entry.isIntersecting){
+						target.classList.add('.active');
+					}
+				});
+			}
+        </script>
+    </body>
+</html>
